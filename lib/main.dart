@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
         body: SafeArea(
           child: Container(
             height: 15,
+            width: 30,
           ),
         ),
       ),

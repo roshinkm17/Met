@@ -14,7 +14,9 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        body: SafeArea(),
+        body: SafeArea(
+          child: Container(),
+        ),
       ),
     );
   }

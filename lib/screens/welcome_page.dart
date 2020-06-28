@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:met/constants.dart';
 import 'package:met/screens/sign_up_page.dart';
 import 'package:met/screens/signin_page.dart';
@@ -43,33 +42,36 @@ class WelcomeScreen extends StatelessWidget {
             ),
             Hero(
               tag: 'bottom-line-row',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Divider(
-                      indent: 30,
-                      endIndent: 10,
-                      thickness: 1,
-                      color: Colors.black38,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Divider(
+                        indent: 30,
+                        endIndent: 10,
+                        thickness: 1,
+                        color: Colors.black38,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  Text(
-                    'OR',
-                    style: textStyle.copyWith(fontSize: 14),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      endIndent: 30,
-                      indent: 10,
-                      thickness: 1,
-                      color: Colors.black38,
+                    SizedBox(
+                      height: 40,
                     ),
-                  ),
-                ],
+                    Text(
+                      'OR',
+                      style: textStyle.copyWith(fontSize: 14),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        endIndent: 30,
+                        indent: 10,
+                        thickness: 1,
+                        color: Colors.black38,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -91,16 +93,20 @@ class WelcomeScreen extends StatelessWidget {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(left: 45, top: 20),
-                    child: Icon(
-                      FontAwesomeIcons.google,
-                      size: 25,
+                    child: Image(
+                      image: NetworkImage(
+                          'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/150_Google_logo_logos-512.png'),
+                      height: 30,
+                      width: 30,
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 10, top: 20),
-                    child: Icon(
-                      FontAwesomeIcons.microsoft,
-                      size: 25,
+                    padding: EdgeInsets.only(left: 20, top: 20),
+                    child: Image(
+                      image: NetworkImage(
+                          'https://cdn0.iconfinder.com/data/icons/shift-logotypes/32/Microsoft-512.png'),
+                      height: 30,
+                      width: 30,
                     ),
                   )
                 ],

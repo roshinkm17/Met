@@ -78,7 +78,7 @@ class _UploadScreenState extends State<UploadScreen> {
         progressIndicator: CircularProgressIndicator(),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(14.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -143,6 +143,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         FontAwesomeIcons.filePdf,
                         color: Colors.white,
                       ),
+                      SizedBox(width: 20),
                       Text(
                         "Upload your Doc",
                         style: TextStyle(color: Colors.white, fontSize: 16),

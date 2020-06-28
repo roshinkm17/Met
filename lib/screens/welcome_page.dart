@@ -21,7 +21,7 @@ class WelcomeScreen extends StatelessWidget {
                     height: 100,
                     width: 100)),
             SizedBox(
-              height: 40,
+              height: 80,
             ),
             Hero(
               tag: "sign-in-button",
@@ -30,7 +30,7 @@ class WelcomeScreen extends StatelessWidget {
               }),
             ),
             SizedBox(
-              height: 20,
+              height: 5,
             ),
             Hero(
               tag: 'sign-up-button',

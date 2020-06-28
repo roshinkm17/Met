@@ -146,85 +146,89 @@ class _UploadScreenState extends State<UploadScreen> {
                         "Upload your Doc",
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: fileSelected == false
-                                  ? Colors.white
-                                  : Colors.green,
-                            ),
-                            child: RawMaterialButton(
-                              splashColor: Colors.transparent,
-                              onPressed: () async {
-                                file = await FilePicker.getFile();
-                                setState(() {
-                                  fileSelected = true;
-                                });
-                              },
-                              child: Icon(
-                                fileSelected == false ? Icons.add : Icons.check,
-                                size: 16,
+                      Flexible(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
                                 color: fileSelected == false
-                                    ? Colors.orangeAccent.shade700
-                                    : Colors.white,
+                                    ? Colors.white
+                                    : Colors.green,
                               ),
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                            ),
-                            child: RawMaterialButton(
+                              child: RawMaterialButton(
                                 splashColor: Colors.transparent,
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(0),
                                 onPressed: () async {
+                                  file = await FilePicker.getFile();
                                   setState(() {
-                                    _isSaving = true;
+                                    fileSelected = true;
                                   });
-                                  try {
-                                    StorageReference storageReference =
-                                        FirebaseStorage().ref().child(
-                                            "$currentUserEmail/${basename(file.path)}");
-                                    StorageUploadTask uploadTask =
-                                        storageReference.putFile(file);
-                                    await uploadTask.onComplete;
-                                    StatusAlert.show(
-                                      context,
-                                      duration: Duration(seconds: 2),
-                                      title: "File Uploaded Successfully",
-                                      configuration: IconConfiguration(
-                                        icon: Icons.check,
-                                      ),
-                                    );
-                                    storageReference
-                                        .getDownloadURL()
-                                        .then((fileURL) {
-                                      setState(() {
-                                        _uploadedFileURL = fileURL;
-                                        print(_uploadedFileURL);
-                                        _isSaving = false;
-                                        fileSelected = false;
-                                      });
-                                    });
-                                  } catch (e) {
-                                    print(e);
-                                    setState(() {
-                                      _isSaving = false;
-                                    });
-                                  }
                                 },
                                 child: Icon(
-                                  FontAwesomeIcons.arrowUp,
-                                  size: 14,
-                                  color: Colors.orangeAccent.shade700,
-                                )),
-                          ),
-                        ],
+                                  fileSelected == false
+                                      ? Icons.add
+                                      : Icons.check,
+                                  size: 16,
+                                  color: fileSelected == false
+                                      ? Colors.orangeAccent.shade700
+                                      : Colors.white,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                              child: RawMaterialButton(
+                                  splashColor: Colors.transparent,
+                                  shape: CircleBorder(),
+                                  padding: EdgeInsets.all(0),
+                                  onPressed: () async {
+                                    setState(() {
+                                      _isSaving = true;
+                                    });
+                                    try {
+                                      StorageReference storageReference =
+                                          FirebaseStorage().ref().child(
+                                              "$currentUserEmail/${basename(file.path)}");
+                                      StorageUploadTask uploadTask =
+                                          storageReference.putFile(file);
+                                      await uploadTask.onComplete;
+                                      StatusAlert.show(
+                                        context,
+                                        duration: Duration(seconds: 2),
+                                        title: "File Uploaded Successfully",
+                                        configuration: IconConfiguration(
+                                          icon: Icons.check,
+                                        ),
+                                      );
+                                      storageReference
+                                          .getDownloadURL()
+                                          .then((fileURL) {
+                                        setState(() {
+                                          _uploadedFileURL = fileURL;
+                                          print(_uploadedFileURL);
+                                          _isSaving = false;
+                                          fileSelected = false;
+                                        });
+                                      });
+                                    } catch (e) {
+                                      print(e);
+                                      setState(() {
+                                        _isSaving = false;
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    FontAwesomeIcons.arrowUp,
+                                    size: 14,
+                                    color: Colors.orangeAccent.shade700,
+                                  )),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

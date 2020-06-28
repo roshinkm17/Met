@@ -13,6 +13,7 @@ dependencies:
   firebase_auth: ^0.16.1
   modal_progress_hud: ^0.1.3
   file_picker: ^1.12.0
+  status_alert: ^0.1.2
 
 dev_dependencies:
   flutter_test:

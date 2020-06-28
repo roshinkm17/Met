@@ -12,7 +12,7 @@ class SignInButton extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.orangeAccent, Colors.deepOrange]),
+            colors: [Color(0xffFF9966), Color(0xffFF5E62)]),
         borderRadius: BorderRadius.circular(50),
       ),
       padding: EdgeInsets.symmetric(horizontal: 25, vertical: 0),

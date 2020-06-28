@@ -4,6 +4,8 @@ import 'package:met/screens/signin_page.dart';
 import 'package:met/screens/upload_file_screen.dart';
 import 'package:met/screens/welcome_page.dart';
 
+import 'screens/qr_display_screen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -22,6 +24,7 @@ class MyApp extends StatelessWidget {
         SignInPage.id: (context) => SignInPage(),
         SignUpPage.id: (context) => SignUpPage(),
         UploadScreen.id: (context) => UploadScreen(),
+        QrDisplay.id: (context) => QrDisplay(),
       },
       initialRoute: WelcomeScreen.id,
     );

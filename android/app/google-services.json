@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "495007935223",
+    "firebase_url": "https://met-0011.firebaseio.com",
+    "project_id": "met-0011",
+    "storage_bucket": "met-0011.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495007935223:android:7af1b3d1983b70da4781f2",
+        "android_client_info": {
+          "package_name": "com.roshinkm.met"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495007935223-d0otee8rerulu68lp080ed83hj24ct61.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPpYaSQ44Bu74UsC2DEWk9swXMS0_L3TE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495007935223-d0otee8rerulu68lp080ed83hj24ct61.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

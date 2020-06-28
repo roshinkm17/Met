@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SignInButton extends StatelessWidget {
+  SignInButton(this.onPressed);
+  final Function onPressed;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -13,9 +15,9 @@ class SignInButton extends StatelessWidget {
             colors: [Colors.orangeAccent, Colors.deepOrange]),
         borderRadius: BorderRadius.circular(50),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 0),
       child: RawMaterialButton(
-        onPressed: null,
+        onPressed: onPressed,
         child: Text(
           "Sign In",
           style: TextStyle(
@@ -30,21 +32,20 @@ class SignInButton extends StatelessWidget {
 }
 
 class SignUpButton extends StatelessWidget {
+  SignUpButton(this.onPressed);
+  final Function onPressed;
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 40, vertical: 5),
       width: double.infinity,
       decoration: BoxDecoration(
+        border: Border.all(color: Colors.deepOrange),
         borderRadius: BorderRadius.circular(50),
-        border: Border.all(
-          color: Colors.deepOrangeAccent,
-          width: 2,
-        ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 0),
       child: RawMaterialButton(
-        onPressed: null,
+        onPressed: onPressed,
         child: Text(
           "Sign Up",
           style: TextStyle(

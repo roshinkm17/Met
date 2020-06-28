@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:met/constants.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:met/screens/upload_file_screen.dart';
 import 'package:met/utilities/custom_buttons.dart';
+import '../constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
-class SignInPage extends StatefulWidget {
-  static String id = "sign_in_page_id";
+class SignUpPage extends StatefulWidget {
+  static String id = "sign_up_page_id";
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignUpPageState extends State<SignUpPage> {
+  bool _isSaving = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String email, password;
-  bool _isSaving = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +33,7 @@ class _SignInPageState extends State<SignInPage> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'Sign In',
+                'Sign Up',
                 style: textStyle.copyWith(fontSize: 30),
                 textAlign: TextAlign.start,
               ),
@@ -78,25 +78,23 @@ class _SignInPageState extends State<SignInPage> {
             ),
             SizedBox(height: 30),
             Hero(
-              tag: 'sign-in-button',
-              child: SignInButton(() async {
+              tag: 'sign-up-button',
+              child: SignUpButton(() async {
                 setState(() {
                   _isSaving = true;
                 });
                 try {
-                  await _auth.signInWithEmailAndPassword(
+                  print(email + password);
+                  await _auth.createUserWithEmailAndPassword(
                       email: email, password: password);
-                  setState(() {
-                    _isSaving = true;
-                  });
-                  Navigator.pushNamed(context, UploadScreen.id);
                   setState(() {
                     _isSaving = false;
                   });
+                  Navigator.pushNamed(context, UploadScreen.id);
                 } catch (e) {
                   print(e);
                   setState(() {
-                    _isSaving = true;
+                    _isSaving = false;
                   });
                 }
               }),

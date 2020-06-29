@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:met/screens/home_screen.dart';
 import 'package:met/screens/upload_file_screen.dart';
 import 'package:met/utilities/custom_buttons.dart';
 import '../constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -90,7 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   setState(() {
                     _isSaving = false;
                   });
-                  Navigator.pushNamed(context, UploadScreen.id);
+                  Navigator.pushNamed(context, HomeScreen.id);
                 } catch (e) {
                   print(e);
                   setState(() {
@@ -102,33 +103,36 @@ class _SignUpPageState extends State<SignUpPage> {
             SizedBox(height: 30),
             Hero(
               tag: 'bottom-line-row',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Divider(
-                      indent: 30,
-                      endIndent: 10,
-                      thickness: 1,
-                      color: Colors.black38,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Divider(
+                        indent: 30,
+                        endIndent: 10,
+                        thickness: 1,
+                        color: Colors.black38,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  Text(
-                    'OR',
-                    style: textStyle.copyWith(fontSize: 14),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      endIndent: 30,
-                      indent: 10,
-                      thickness: 1,
-                      color: Colors.black38,
+                    SizedBox(
+                      height: 40,
                     ),
-                  ),
-                ],
+                    Text(
+                      'OR',
+                      style: textStyle.copyWith(fontSize: 14),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        endIndent: 30,
+                        indent: 10,
+                        thickness: 1,
+                        color: Colors.black38,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -150,16 +154,23 @@ class _SignUpPageState extends State<SignUpPage> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(left: 45, top: 20),
-                    child: Icon(
-                      FontAwesomeIcons.google,
-                      size: 25,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Image(
+                        image: NetworkImage(
+                            'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/150_Google_logo_logos-512.png'),
+                        height: 30,
+                        width: 30,
+                      ),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 10, top: 20),
-                    child: Icon(
-                      FontAwesomeIcons.microsoft,
-                      size: 25,
+                    padding: EdgeInsets.only(left: 20, top: 20),
+                    child: Image(
+                      image: NetworkImage(
+                          'https://cdn0.iconfinder.com/data/icons/shift-logotypes/32/Microsoft-512.png'),
+                      height: 30,
+                      width: 30,
                     ),
                   )
                 ],

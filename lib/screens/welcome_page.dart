@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:met/constants.dart';
 import 'package:met/screens/sign_up_page.dart';
-import 'package:met/screens/signin_page.dart';
+import 'package:met/screens/sign_in_page.dart';
 import 'package:met/utilities/custom_buttons.dart';
 
 class WelcomeScreen extends StatelessWidget {

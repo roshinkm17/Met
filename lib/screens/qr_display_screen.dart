@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrDisplay extends StatefulWidget {
-  static String id = "qr_display_screen";
+  static String id = "qr_display_screen_id";
   @override
   _State createState() => _State();
 }

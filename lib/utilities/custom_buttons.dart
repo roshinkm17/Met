@@ -12,7 +12,7 @@ class SignInButton extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xffFF9966), Color(0xffFF5E62)]),
+            colors: [Color(0xffFF512F), Color(0xffF44C4C)]),
         borderRadius: BorderRadius.circular(50),
       ),
       padding: EdgeInsets.symmetric(horizontal: 25, vertical: 0),
@@ -40,7 +40,7 @@ class SignUpButton extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 40, vertical: 5),
       width: double.infinity,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.deepOrange),
+        border: Border.all(color: Color(0xffF44C4C)),
         borderRadius: BorderRadius.circular(50),
       ),
       padding: EdgeInsets.symmetric(horizontal: 25, vertical: 0),

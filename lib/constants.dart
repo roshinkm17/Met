@@ -5,3 +5,5 @@ const TextStyle textStyle = TextStyle(
   fontSize: 20,
 );
 //const Color transparent = Color(0x00000000);
+
+const Color primaryColor = Color(0xffF44C4C);

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:met/screens/qr_display_screen.dart';
 import 'package:met/screens/sign_up_page.dart';
 import 'package:met/screens/signin_page.dart';
 import 'package:met/screens/upload_file_screen.dart';
 import 'package:met/screens/welcome_page.dart';
-
-import 'screens/qr_display_screen.dart';
 
 void main() {
   runApp(MyApp());

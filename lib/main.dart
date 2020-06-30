@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         QrDisplay.id: (context) => QrDisplay(),
         HomeScreen.id: (context) => HomeScreen(),
       },
-      initialRoute: WelcomeScreen.id,
+      initialRoute: HomeScreen.id,
     );
   }
 }

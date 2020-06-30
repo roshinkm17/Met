@@ -5,7 +5,7 @@ class DocumentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         padding: EdgeInsets.all(30),
@@ -18,7 +18,7 @@ class DocumentCard extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              "Aadhar.pdf",
+              "Aadhar",
               style: TextStyle(color: Color(0xffABABAB)),
             ),
             SizedBox(height: 20),

@@ -2,13 +2,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:met/screens/document_preview_page.dart';
 import 'package:status_alert/status_alert.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:met/constants.dart';
+import 'package:path/path.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:met/show_preview.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UploadScreen extends StatefulWidget {
   static String id = "upload_screen_id";
@@ -25,9 +26,15 @@ class _UploadScreenState extends State<UploadScreen> {
 
   void getFile() async {
     file = await FilePicker.getFile();
+    setState(() {
+      filePath = file.path;
+      fileName = basename(filePath.toString().split('.')[0]);
+      _controller = TextEditingController(text: fileName);
+    });
   }
 
   var pageImage;
+  TextEditingController _controller;
   String _uploadedFileURL;
   FirebaseUser currentUser;
   String currentUserEmail;
@@ -39,11 +46,14 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   File file;
-  String fileName, documentType;
+  String _errorText;
+  bool _dropdownError = false;
+  String fileName, documentType, filePath;
   int selectedIndex = 0;
   bool fileSelected = false;
   bool _isSaving = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Firestore _firestore = Firestore.instance;
 
   String _value;
   @override
@@ -58,18 +68,18 @@ class _UploadScreenState extends State<UploadScreen> {
           child: Container(
 //        color: Color(0xffffb577),
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-              colors: [Colors.orangeAccent, primaryColor],
-            )),
+              gradient: LinearGradient(
+                begin: Alignment.bottomRight,
+                end: Alignment.topLeft,
+                colors: [Colors.orangeAccent, primaryColor],
+              ),
+            ),
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 30, top: 40),
+                    padding: const EdgeInsets.only(left: 10, right: 30, top: 40),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -97,8 +107,7 @@ class _UploadScreenState extends State<UploadScreen> {
                       children: <Widget>[
                         Text(
                           "Welcome",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400, color: Colors.white),
+                          style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white),
                         ),
                         SizedBox(height: 20),
                         Text(
@@ -118,33 +127,38 @@ class _UploadScreenState extends State<UploadScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(40),
-                            topLeft: Radius.circular(40)),
+                            topRight: Radius.circular(40), topLeft: Radius.circular(40)),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(30.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
-                            TextField(
-                              onChanged: (value) {
-                                fileName = value;
-                              },
-                              decoration: InputDecoration(
-                                  enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade300)),
-                                  contentPadding: EdgeInsets.only(top: 0),
-                                  labelStyle: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color(0xffbebebe)),
-                                  labelText: "Name of the Document"),
+                            Expanded(
+                              child: Center(
+                                child: TextField(
+                                  controller: _controller,
+                                  onChanged: (value) {
+                                    fileName = value;
+                                  },
+                                  decoration: InputDecoration(
+                                      errorText: _errorText,
+                                      errorStyle: TextStyle(fontSize: 10, color: Colors.red),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.grey.shade300),
+                                      ),
+                                      contentPadding: EdgeInsets.only(top: 0),
+                                      labelStyle: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
+                                          color: Color(0xffbebebe)),
+                                      labelText: "Name of the Document"),
+                                ),
+                              ),
                             ),
                             SizedBox(height: 20),
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 5),
+                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                               margin: EdgeInsets.only(bottom: 20),
                               decoration: BoxDecoration(
                                 color: Color(0xffebebeb),
@@ -175,117 +189,117 @@ class _UploadScreenState extends State<UploadScreen> {
                                   isExpanded: true,
                                   hint: Text(
                                     'Type of your document',
-                                    style: TextStyle(
-                                        color: Color(0xffbebebe), fontSize: 18),
+                                    style: TextStyle(color: Color(0xffbebebe), fontSize: 18),
                                   ),
                                   value: _value,
+                                  elevation: 30,
                                   style: TextStyle(
                                     fontSize: 18,
                                     color: Colors.grey,
                                   ),
-                                  iconEnabledColor: Colors.grey,
+                                  iconEnabledColor: _dropdownError ? Colors.red : Colors.grey,
                                   iconSize: 30,
                                 ),
                               ),
                             ),
                             Expanded(
                               child: Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xfff6f6f6),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                width: double.infinity,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                padding: EdgeInsets.only(top: 20, left: 30, right: 30),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
-                                    Icon(
-                                      Icons.remove_red_eye,
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(FontAwesomeIcons.edit),
                                       color: Color(0xffbebebe),
-                                      size: 40,
                                     ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      "Preview",
-                                      style: TextStyle(
-                                          color: Color(0xffbebebe),
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w200),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        if (fileName.isEmpty) {
+                                          setState(() {
+                                            _value == null
+                                                ? _errorText = "Name and type cannot be empty"
+                                                : _errorText = "Name cannot be empty";
+                                            _dropdownError = true;
+                                          });
+                                        } else {
+                                          if (_value == null) {
+                                            setState(() {
+                                              _dropdownError = true;
+                                              _errorText = "Type cannot be empty";
+                                            });
+                                          } else {
+                                            setState(() {
+                                              _isSaving = true;
+                                            });
+                                            try {
+                                              StorageReference storageReference = FirebaseStorage()
+                                                  .ref()
+                                                  .child("$currentUserEmail/$fileName");
+                                              StorageUploadTask uploadTask =
+                                                  storageReference.putFile(file);
+                                              await uploadTask.onComplete;
+                                              storageReference.getDownloadURL().then((fileURL) {
+                                                _firestore.collection(currentUserEmail).add({
+                                                  "owner": currentUserEmail,
+                                                  "document url": fileURL,
+                                                  "document name":
+                                                      "$fileName.${basename(filePath).split(".")[1]}",
+                                                  "document type": documentType,
+                                                });
+                                                setState(() {
+                                                  _uploadedFileURL = fileURL;
+                                                  print(_uploadedFileURL);
+                                                  _isSaving = false;
+                                                  fileSelected = false;
+                                                });
+                                              });
+                                              setState(() {
+                                                _isSaving = false;
+                                              });
+                                              String statusUrl =
+                                                  "https://assets3.lottiefiles.com/packages/lf20_zvhkEU.json";
+                                              Navigator.pop(context, true);
+
+                                              StatusAlert.show(
+                                                context,
+                                                duration: Duration(seconds: 2),
+                                                title: "File Uploaded Successfully",
+                                                configuration: IconConfiguration(
+                                                  icon: Icons.check,
+                                                ),
+                                              );
+                                            } catch (e) {
+                                              print(e);
+                                              setState(() {
+                                                _isSaving = false;
+                                              });
+                                            }
+                                          }
+                                        }
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xff33b5e5),
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
+                                        child: Icon(
+                                          Icons.cloud_upload,
+                                          size: 30,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
+                                    IconButton(
+                                      onPressed: () {
+                                        getFile();
+                                      },
+                                      icon: Icon(FontAwesomeIcons.redo),
+                                      color: Color(0xffbebebe),
+                                    )
                                   ],
                                 ),
-                              ),
-                            ),
-                            Container(
-                              padding:
-                                  EdgeInsets.only(top: 20, left: 30, right: 30),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(FontAwesomeIcons.edit),
-                                    color: Color(0xffbebebe),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      setState(() {
-                                        _isSaving = true;
-                                      });
-                                      try {
-                                        StorageReference storageReference =
-                                            FirebaseStorage().ref().child(
-                                                "$currentUserEmail/$fileName");
-                                        StorageUploadTask uploadTask =
-                                            storageReference.putFile(file);
-                                        await uploadTask.onComplete;
-                                        setState(() {
-                                          _isSaving = false;
-                                        });
-                                        StatusAlert.show(
-                                          context,
-                                          duration: Duration(seconds: 2),
-                                          title: "File Uploaded Successfully",
-                                          configuration: IconConfiguration(
-                                            icon: Icons.check,
-                                          ),
-                                        );
-                                        storageReference
-                                            .getDownloadURL()
-                                            .then((fileURL) {
-                                          setState(() {
-                                            _uploadedFileURL = fileURL;
-                                            print(_uploadedFileURL);
-                                            _isSaving = false;
-                                            fileSelected = false;
-                                          });
-                                        });
-                                      } catch (e) {
-                                        print(e);
-                                        setState(() {
-                                          _isSaving = false;
-                                        });
-                                      }
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(20),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xff33b5e5),
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Icon(
-                                        Icons.cloud_upload,
-                                        size: 30,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(FontAwesomeIcons.folderOpen),
-                                    color: Color(0xffbebebe),
-                                  )
-                                ],
                               ),
                             ),
                           ],

@@ -18,6 +18,12 @@ dependencies:
   google_sign_in: ^4.5.1
   flutter_custom_clippers: ^1.1.1
   custom_navigator: ^0.3.0
+  cloud_firestore: ^0.13.7
+  http:
+  path_provider:
+  flutter_plugin_pdf_viewer: ^1.0.7
+  flutter_pdfview: ^1.0.3
+  rflutter_alert: ^1.0.3
 
 dev_dependencies:
   flutter_test:

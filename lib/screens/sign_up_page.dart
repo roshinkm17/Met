@@ -91,7 +91,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   setState(() {
                     _isSaving = false;
                   });
-                  Navigator.pushNamed(context, HomeScreen.id);
+                  Navigator.pushNamed(
+                      context, AppBottomNavigationBarController.id);
                 } catch (e) {
                   print(e);
                   setState(() {

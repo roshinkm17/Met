@@ -89,7 +89,8 @@ class _SignInPageState extends State<SignInPage> {
                   setState(() {
                     _isSaving = true;
                   });
-                  Navigator.pushNamed(context, HomeScreen.id);
+                  Navigator.pushNamed(
+                      context, AppBottomNavigationBarController.id);
                   setState(() {
                     _isSaving = false;
                   });

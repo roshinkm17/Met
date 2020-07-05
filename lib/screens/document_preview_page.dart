@@ -3,49 +3,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:met/utilities/document_card.dart';
+import 'package:met/utilities/document_property.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import '../constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class DocumentPreviewPage extends StatefulWidget {
   static String id = 'document_preview_page';
+
   @override
   _DocumentPreviewPageState createState() => _DocumentPreviewPageState();
 }
 
 class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
-  void getMyDocuments() async {
+  void getCurrentUser() async {
     FirebaseUser currentUser = await _auth.currentUser();
-    currentUserEmail = currentUser.email;
-    var doc = await _firestore.collection(currentUserEmail).getDocuments();
-    documentCards.clear();
-    _count = 0;
-    for (var document in doc.documents) {
-      setState(() {
-        fileName = document.data["document name"];
-        fileURL = document.data["document url"];
-        fileCategory = document.data["document type"];
-        fileType = fileName.split(".")[1];
-        fileName = fileName.split(".")[0];
-        print(fileName + " " + fileType);
-        card = DocumentCard(fileName, fileType, fileURL, fileCategory, currentUserEmail);
-        _count++;
-        documentCards.add(card);
-      });
-    }
+    _docProperty.docOwner = currentUser.email;
+  }
+
+  onDelete(int index, var snapshot) async {
+    await Firestore.instance.runTransaction((Transaction myTransaction) async {
+      await myTransaction.delete(snapshot.data.documents[index].reference);
+    });
   }
 
   void initState() {
     super.initState();
-    getMyDocuments();
+    getCurrentUser();
   }
 
+  DocProperty _docProperty = DocProperty();
   int _count = 0;
   DocumentCard card;
   List<DocumentCard> documentCards = [];
   var docs;
-  String fileName, fileURL, fileType, fileCategory;
-  String currentUserEmail;
   FirebaseAuth _auth = FirebaseAuth.instance;
   Firestore _firestore = Firestore.instance;
   bool _isSaving = false;
@@ -146,15 +137,35 @@ class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
                           ),
                           Expanded(
                             child: Container(
-                              child: GridView.count(
-                                crossAxisSpacing: 20,
-                                mainAxisSpacing: 20,
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                scrollDirection: Axis.vertical,
-                                crossAxisCount: 2,
-                                children: List.generate(_count, (count) {
-                                  return documentCards[count];
-                                }),
+//                              child: GridView.count(
+//                                crossAxisSpacing: 20,
+//                                mainAxisSpacing: 20,
+//                                padding: EdgeInsets.symmetric(horizontal: 20),
+//                                scrollDirection: Axis.vertical,
+//                                crossAxisCount: 2,
+//                                children: documentCards,
+//                              ),
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream: _firestore.collection('roshin@email.com').snapshots(),
+                                builder: (context, snapshot) {
+                                  var card;
+                                  List<Widget> documentCards = [];
+                                  if (snapshot.hasData) {
+                                    return ListView.builder(
+                                      itemCount: snapshot.data.documents.length,
+                                      itemBuilder: (context, index) {
+                                        final doc = snapshot.data.documents[index];
+                                        _docProperty.docName = doc.data["document name"];
+                                        _docProperty.docURL = doc.data["document url"];
+                                        _docProperty.docCategory = doc.data["document category"];
+                                        _docProperty.docExtension = doc.data['document extension'];
+                                        return new DocumentCard(docProperty: _docProperty);
+                                      },
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                },
                               ),
                             ),
                           )

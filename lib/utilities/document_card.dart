@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:met/screens/home_screen.dart';
+import 'package:met/utilities/document_property.dart';
 import 'package:met/utilities/viewer.dart';
 import 'package:met/constants.dart';
 import 'package:status_alert/status_alert.dart';
@@ -8,10 +9,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DocumentCard extends StatefulWidget {
-  DocumentCard(
-      this.fileName, this.fileType, this.fileUrl, this.fileCategory, this.currentUserEmail);
-  final String fileType, fileName, fileUrl, fileCategory;
-  final String currentUserEmail;
+  DocumentCard({this.docProperty});
+  final DocProperty docProperty;
 
   @override
   _DocumentCardState createState() => _DocumentCardState();
@@ -21,42 +20,39 @@ class _DocumentCardState extends State<DocumentCard> {
   void initState() {
     super.initState();
     setState(() {
-      fileName = widget.fileName;
-      fileType = widget.fileType;
-      fileUrl = widget.fileUrl;
-      fileCategory = widget.fileCategory;
-      currentUserEmail = widget.currentUserEmail;
+      _docProperty.docURL = widget.docProperty.docURL;
+      _docProperty.docName = widget.docProperty.docName;
+      _docProperty.docExtension = widget.docProperty.docExtension;
+      _docProperty.docExtension = widget.docProperty.docExtension;
+      _docProperty.docCategory = widget.docProperty.docCategory;
+      _docProperty.docOwner = widget.docProperty.docOwner;
     });
   }
 
   deleteDocument() async {
     StorageReference storageReference =
-        FirebaseStorage().ref().child("$currentUserEmail/$fileName");
+        FirebaseStorage().ref().child("${_docProperty.docOwner}/${_docProperty.docName}");
     Firestore _firestore = Firestore.instance;
-    var doc = await _firestore.collection(currentUserEmail).getDocuments();
+    var doc = await _firestore.collection(_docProperty.docOwner).getDocuments();
     for (var document in doc.documents) {
       String documentName = document.data['document name'];
-      documentName = documentName.split(".")[0];
-      if (documentName == fileName) {
-        setState(() {
-          document.reference.delete();
-          storageReference.delete();
-          Navigator.pushNamed(context, AppBottomNavigationBarController.id);
-          StatusAlert.show(
-            context,
-            duration: Duration(seconds: 2),
-            title: "Document deleted!",
-            configuration: IconConfiguration(
-              icon: FontAwesomeIcons.trash,
-            ),
-          );
-        });
+      if (documentName == _docProperty.docName) {
+        document.reference.delete();
+        storageReference.delete();
+        Navigator.popAndPushNamed(context, AppBottomNavigationBarController.id);
+        StatusAlert.show(
+          context,
+          duration: Duration(seconds: 2),
+          title: "Document deleted!",
+          configuration: IconConfiguration(
+            icon: FontAwesomeIcons.trash,
+          ),
+        );
       }
     }
   }
 
-  String fileType, fileName, fileUrl, urlPdfPath, fileCategory;
-  String currentUserEmail;
+  DocProperty _docProperty = DocProperty();
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -71,13 +67,13 @@ class _DocumentCardState extends State<DocumentCard> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
-                  "$fileType",
+                  "${_docProperty.docExtension}",
                   style: TextStyle(color: Colors.orange),
                 ),
                 FittedBox(
                   fit: BoxFit.fitHeight,
                   child: Text(
-                    "$fileCategory",
+                    "${_docProperty.docCategory}",
                     style: TextStyle(color: primaryColor),
                   ),
                 )
@@ -88,7 +84,7 @@ class _DocumentCardState extends State<DocumentCard> {
               child: FittedBox(
                 fit: BoxFit.fitHeight,
                 child: Text(
-                  "${widget.fileName}",
+                  "${_docProperty.docName}",
                   style: TextStyle(color: Color(0xffABABAB), fontSize: 20),
                 ),
               ),
@@ -103,10 +99,9 @@ class _DocumentCardState extends State<DocumentCard> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   onPressed: () {
-                    print(fileUrl);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Viewer(fileUrl)),
+                      MaterialPageRoute(builder: (context) => Viewer(_docProperty.docURL)),
                     );
                     setState(() {});
                   },

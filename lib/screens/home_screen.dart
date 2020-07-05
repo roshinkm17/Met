@@ -18,7 +18,7 @@ class AppBottomNavigationBarController extends StatefulWidget {
 class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBarController> {
   final List<Widget> pages = [
     DocumentPreviewPage(),
-    SignInPage(),
+    UploadScreen(),
     SignUpPage(),
     WelcomeScreen(),
   ];
@@ -43,8 +43,8 @@ class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBa
             title: Text('Home'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            title: Text('Messages'),
+            icon: Icon(Icons.cloud_upload),
+            title: Text('Upload'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
@@ -59,25 +59,24 @@ class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBa
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       bottomNavigationBar: _bottomNavigationBar(_selectedIndex),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(FontAwesomeIcons.plus),
-        backgroundColor: primaryColor,
-        onPressed: () async {
-          var result = await Navigator.pushNamed(context, UploadScreen.id);
-          if (result == true) {
-            tabTapped(1);
-            Future.delayed(const Duration(milliseconds: 50), () {
-              setState(() {
-                tabTapped(0);
-              });
-            });
-          }
-        },
-        elevation: 20,
-        highlightElevation: 0,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: _selectedIndex != 1
+          ? FloatingActionButton.extended(
+              label: Text("Upload"),
+              isExtended: true,
+              icon: Icon(FontAwesomeIcons.fileUpload),
+              backgroundColor: primaryColor,
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 1;
+                });
+              },
+              elevation: 20,
+              highlightElevation: 0,
+            )
+          : Container(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       body: PageStorage(
         child: pages[_selectedIndex],

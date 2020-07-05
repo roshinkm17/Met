@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:met/screens/document_preview_page.dart';
+import 'package:met/utilities/document_property.dart';
 import 'package:status_alert/status_alert.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:met/constants.dart';
@@ -21,15 +22,22 @@ class _UploadScreenState extends State<UploadScreen> {
   void initState() {
     super.initState();
     getCurrentUser();
-    getFile();
   }
 
   void getFile() async {
-    file = await FilePicker.getFile();
+    _docProperty.docFile = await FilePicker.getFile();
     setState(() {
-      filePath = file.path;
-      fileName = basename(filePath.toString().split('.')[0]);
-      _controller = TextEditingController(text: fileName);
+      filePath = _docProperty.docFile.path;
+      _docProperty.docName = basename(filePath.toString().split('.')[0]);
+      _docProperty.docExtension = basename(filePath.toString().split('.')[1]);
+      _controller = TextEditingController(text: _docProperty.docName);
+    });
+  }
+
+  void getCurrentUser() async {
+    currentUser = await _auth.currentUser();
+    setState(() {
+      _docProperty.docOwner = currentUser.email;
     });
   }
 
@@ -38,13 +46,6 @@ class _UploadScreenState extends State<UploadScreen> {
   String _uploadedFileURL;
   FirebaseUser currentUser;
   String currentUserEmail;
-  void getCurrentUser() async {
-    currentUser = await _auth.currentUser();
-    setState(() {
-      currentUserEmail = currentUser.email;
-    });
-  }
-
   File file;
   String _errorText;
   bool _dropdownError = false;
@@ -55,6 +56,7 @@ class _UploadScreenState extends State<UploadScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Firestore _firestore = Firestore.instance;
 
+  DocProperty _docProperty = DocProperty();
   String _value;
   @override
   Widget build(BuildContext context) {
@@ -81,17 +83,8 @@ class _UploadScreenState extends State<UploadScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 10, right: 30, top: 40),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.white,
-                          ),
-                        ),
                         CircleAvatar(
                           backgroundColor: Colors.black,
                           child: Icon(Icons.person, color: Colors.white),
@@ -139,7 +132,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                 child: TextField(
                                   controller: _controller,
                                   onChanged: (value) {
-                                    fileName = value;
+                                    _docProperty.docName = value;
                                   },
                                   decoration: InputDecoration(
                                       errorText: _errorText,
@@ -182,8 +175,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                   ],
                                   onChanged: (String value) {
                                     setState(() {
-                                      _value = value;
-                                      documentType = value;
+                                      _docProperty.docCategory = value;
                                     });
                                   },
                                   isExpanded: true,
@@ -191,7 +183,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                     'Type of your document',
                                     style: TextStyle(color: Color(0xffbebebe), fontSize: 18),
                                   ),
-                                  value: _value,
+                                  value: _docProperty.docCategory,
                                   elevation: 30,
                                   style: TextStyle(
                                     fontSize: 18,
@@ -215,67 +207,47 @@ class _UploadScreenState extends State<UploadScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () async {
-                                        if (fileName.isEmpty) {
-                                          setState(() {
-                                            _value == null
-                                                ? _errorText = "Name and type cannot be empty"
-                                                : _errorText = "Name cannot be empty";
-                                            _dropdownError = true;
+                                        print(_docProperty.docExtension);
+                                        setState(() {
+                                          _isSaving = true;
+                                        });
+                                        try {
+                                          StorageReference storageReference = FirebaseStorage()
+                                              .ref()
+                                              .child(
+                                                  "${_docProperty.docOwner}/${_docProperty.docName}");
+                                          StorageUploadTask uploadTask =
+                                              storageReference.putFile(_docProperty.docFile);
+                                          await uploadTask.onComplete;
+                                          storageReference.getDownloadURL().then((fileURL) {
+                                            _firestore.collection(_docProperty.docOwner).add({
+                                              "owner": _docProperty.docOwner,
+                                              "document url": fileURL,
+                                              "document name": _docProperty.docName,
+                                              "document extension": _docProperty.docExtension,
+                                              "document category": _docProperty.docCategory,
+                                            });
+                                            setState(() {
+                                              _isSaving = false;
+                                              fileSelected = false;
+                                            });
                                           });
-                                        } else {
-                                          if (_value == null) {
-                                            setState(() {
-                                              _dropdownError = true;
-                                              _errorText = "Type cannot be empty";
-                                            });
-                                          } else {
-                                            setState(() {
-                                              _isSaving = true;
-                                            });
-                                            try {
-                                              StorageReference storageReference = FirebaseStorage()
-                                                  .ref()
-                                                  .child("$currentUserEmail/$fileName");
-                                              StorageUploadTask uploadTask =
-                                                  storageReference.putFile(file);
-                                              await uploadTask.onComplete;
-                                              storageReference.getDownloadURL().then((fileURL) {
-                                                _firestore.collection(currentUserEmail).add({
-                                                  "owner": currentUserEmail,
-                                                  "document url": fileURL,
-                                                  "document name":
-                                                      "$fileName.${basename(filePath).split(".")[1]}",
-                                                  "document type": documentType,
-                                                });
-                                                setState(() {
-                                                  _uploadedFileURL = fileURL;
-                                                  print(_uploadedFileURL);
-                                                  _isSaving = false;
-                                                  fileSelected = false;
-                                                });
-                                              });
-                                              setState(() {
-                                                _isSaving = false;
-                                              });
-                                              String statusUrl =
-                                                  "https://assets3.lottiefiles.com/packages/lf20_zvhkEU.json";
-                                              Navigator.pop(context, true);
-
-                                              StatusAlert.show(
-                                                context,
-                                                duration: Duration(seconds: 2),
-                                                title: "File Uploaded Successfully",
-                                                configuration: IconConfiguration(
-                                                  icon: Icons.check,
-                                                ),
-                                              );
-                                            } catch (e) {
-                                              print(e);
-                                              setState(() {
-                                                _isSaving = false;
-                                              });
-                                            }
-                                          }
+                                          setState(() {
+                                            _isSaving = false;
+                                          });
+                                          StatusAlert.show(
+                                            context,
+                                            duration: Duration(seconds: 2),
+                                            title: "File Uploaded Successfully",
+                                            configuration: IconConfiguration(
+                                              icon: Icons.check,
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          print(e);
+                                          setState(() {
+                                            _isSaving = false;
+                                          });
                                         }
                                       },
                                       child: Container(
@@ -295,7 +267,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                       onPressed: () {
                                         getFile();
                                       },
-                                      icon: Icon(FontAwesomeIcons.redo),
+                                      icon: Icon(FontAwesomeIcons.plus),
                                       color: Color(0xffbebebe),
                                     )
                                   ],

@@ -32,6 +32,7 @@ class _UploadScreenState extends State<UploadScreen> {
       _docProperty.docName = basename(filePath.toString().split('.')[0]);
       _docProperty.docExtension = basename(filePath.toString().split('.')[1]);
       _controller = TextEditingController(text: _docProperty.docName);
+
     });
   }
 
@@ -43,7 +44,7 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   var pageImage;
-  TextEditingController _controller;
+  TextEditingController _controller=null;
   String _uploadedFileURL;
   FirebaseUser currentUser;
   String currentUserEmail;
@@ -59,7 +60,7 @@ class _UploadScreenState extends State<UploadScreen> {
   final Firestore _firestore = Firestore.instance;
 
   DocProperty _docProperty = DocProperty();
-  String _value;
+  String _value=" ";
   @override
   Widget build(BuildContext context) {
     return Hero(
@@ -193,110 +194,144 @@ class _UploadScreenState extends State<UploadScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                Expanded(
-                                  flex: 4,
-                                  child: RaisedButton(
-                                    elevation: 5,
-                                    highlightElevation: 0,
-                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                    color: Color(0xff33b5e5),
-                                    textColor: Colors.white,
-                                    onPressed: () async {
-                                      _isExists = false;
-                                      if (_docProperty.docName.isNotEmpty) {
-                                        if (_docProperty.docCategory != null) {
-                                          Firestore _firestore = Firestore.instance;
-                                          var doc = await _firestore
-                                              .collection(_docProperty.docOwner)
-                                              .getDocuments();
-                                          for (var document in doc.documents) {
-                                            String documentName = document.data['document name'];
-                                            if (documentName == _docProperty.docName) {
-                                              setState(() {
-                                                _errorText = "Document already exists";
-                                                _isExists = true;
-                                              });
-                                              break;
+                                Visibility(
+                                  visible: filePath==null?false:true,
+                                  child: Expanded(
+                                    flex: 4,
+                                    child: RaisedButton(
+                                      elevation: 5,
+                                      highlightElevation: 0,
+                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                      color: Color(0xff33b5e5),
+                                      textColor: Colors.white,
+                                      onPressed: () async {
+                                        _isExists = false;
+                                        if (_docProperty.docName.isNotEmpty) {
+                                          if (_docProperty.docCategory != null) {
+                                            Firestore _firestore = Firestore.instance;
+                                            var doc = await _firestore
+                                                .collection(_docProperty.docOwner)
+                                                .getDocuments();
+                                            for (var document in doc.documents) {
+                                              String documentName = document.data['document name'];
+                                              if (documentName == _docProperty.docName) {
+                                                setState(() {
+                                                  _errorText = "Document already exists";
+                                                  _isExists = true;
+                                                });
+                                                break;
+                                              }
                                             }
-                                          }
 
-                                          if (_isExists == false) {
-                                            setState(() {
-                                              _isSaving = true;
-                                            });
-                                            try {
-                                              StorageReference storageReference = FirebaseStorage()
-                                                  .ref()
-                                                  .child(
-                                                      "${_docProperty.docOwner}/${_docProperty.docName}");
-                                              StorageUploadTask uploadTask =
-                                                  storageReference.putFile(_docProperty.docFile);
-                                              await uploadTask.onComplete;
-                                              storageReference.getDownloadURL().then((fileURL) {
-                                                _firestore.collection(_docProperty.docOwner).add({
-                                                  "owner": _docProperty.docOwner,
-                                                  "document url": fileURL,
-                                                  "document name": _docProperty.docName,
-                                                  "document extension": _docProperty.docExtension,
-                                                  "document category": _docProperty.docCategory,
+                                            if (_isExists == false) {
+                                              setState(() {
+                                                _isSaving = true;
+                                              });
+                                              try {
+                                                StorageReference storageReference = FirebaseStorage()
+                                                    .ref()
+                                                    .child(
+                                                        "${_docProperty.docOwner}/${_docProperty.docName}");
+                                                StorageUploadTask uploadTask =
+                                                    storageReference.putFile(_docProperty.docFile);
+                                                await uploadTask.onComplete;
+                                                storageReference.getDownloadURL().then((fileURL) {
+                                                  _firestore.collection(_docProperty.docOwner).add({
+                                                    "owner": _docProperty.docOwner,
+                                                    "document url": fileURL,
+                                                    "document name": _docProperty.docName,
+                                                    "document extension": _docProperty.docExtension,
+                                                    "document category": _docProperty.docCategory,
+                                                  });
+                                                  setState(() {
+                                                    _isSaving = false;
+                                                    fileSelected = false;
+                                                    filePath=null;
+                                                  });
                                                 });
                                                 setState(() {
                                                   _isSaving = false;
-                                                  fileSelected = false;
                                                 });
-                                              });
-                                              setState(() {
-                                                _isSaving = false;
-                                              });
-                                              StatusAlert.show(
-                                                context,
-                                                duration: Duration(seconds: 2),
-                                                title: "File Uploaded Successfully",
-                                                configuration: IconConfiguration(
-                                                  icon: Icons.check,
-                                                ),
-                                              );
-                                            } catch (e) {
-                                              print(e);
-                                              setState(() {
-                                                _isSaving = false;
-                                              });
+
+                                                StatusAlert.show(
+                                                  context,
+                                                  duration: Duration(seconds: 2),
+                                                  title: "File Uploaded Successfully",
+                                                  configuration: IconConfiguration(
+                                                    icon: Icons.check,
+                                                  ),
+                                                );
+                                              } catch (e) {
+                                                print(e);
+                                                setState(() {
+                                                  _isSaving = false;
+                                                });
+                                              }
                                             }
+                                          } else {
+                                            setState(() {
+                                              _errorText = "Type cannot be empty!";
+                                            });
                                           }
                                         } else {
                                           setState(() {
-                                            _errorText = "Type cannot be empty!";
+                                            _errorText = "Name cannot be empty!";
                                           });
+
                                         }
-                                      } else {
-                                        setState(() {
-                                          _errorText = "Name cannot be empty!";
-                                        });
-                                      }
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Icon(Icons.cloud_upload),
-                                        Text(
-                                          "Upload",
-                                          style: TextStyle(fontSize: 20),
-                                        )
-                                      ],
+
+
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(Icons.cloud_upload),
+                                          SizedBox(width: 10,),
+                                          Text(
+                                            "Upload",
+                                            style: TextStyle(fontSize: 20),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 2,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      getFile();
+                                SizedBox(width: 20,),
+                                Visibility(visible: filePath==null?false:true,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      setState(() {
+                                        // ignore: unnecessary_statements
+                                        filePath=null;
+                                      });
+
                                     },
-                                    icon: Icon(
-                                      FontAwesomeIcons.plus,
-                                      size: 16,
+                                    child: Container(
+                                    color: Colors.grey,
+                                      height: 50,
+                                      width: 50,
+                                      child: Icon(Icons.close),
                                     ),
-                                    color: Color(0xffbebebe),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: filePath==null?true:false,
+                                  child: Expanded(
+                                    flex: 2,
+                                    child: Card(
+                                      color: Colors.deepOrangeAccent,
+                                      child: IconButton(
+                                        onPressed: () {setState(() {
+                                          getFile();
+                                        });
+                                          },
+                                        icon: Icon(
+                                          FontAwesomeIcons.plus,
+                                          size: 16,
+                                        ),
+                                        color: Color(0xffbebebe),
+                                      ),
+                                    ),
                                   ),
                                 )
                               ],

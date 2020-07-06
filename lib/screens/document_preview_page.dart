@@ -139,7 +139,7 @@ class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
                           Expanded(
                             child: Container(
                               child: StreamBuilder<QuerySnapshot>(
-                                stream: _firestore.collection('roshin@email.com').snapshots(),
+                                stream: _firestore.collection(_docProperty.docOwner).snapshots(),
                                 builder: (context, snapshot) {
                                   var card;
                                   List<Widget> documentCards = [];

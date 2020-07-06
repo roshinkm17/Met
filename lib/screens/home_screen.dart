@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,6 +9,17 @@ import 'package:met/screens/sign_in_page.dart';
 import 'package:met/screens/sign_up_page.dart';
 import 'package:met/screens/upload_file_screen.dart';
 import 'package:met/screens/welcome_page.dart';
+import 'package:path/path.dart';
+import 'package:file_picker/file_picker.dart';
+
+File file;
+String _errorText;
+bool _dropdownError = false;
+String fileName, documentType, filePath;
+int selectedIndex = 0;
+bool fileSelected = false;
+bool _isSaving = false;
+TextEditingController _controller;
 
 class AppBottomNavigationBarController extends StatefulWidget {
   static String id = "home_screen_id";
@@ -16,6 +28,17 @@ class AppBottomNavigationBarController extends StatefulWidget {
 }
 
 class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBarController> {
+
+  void getFile() async {
+    file = await FilePicker.getFile();
+    setState(() {
+      filePath = file.path;
+
+      fileName = basename(filePath.toString().split('.')[0]);
+      _controller = TextEditingController(text: fileName);
+    });
+  }
+
   final List<Widget> pages = [
     DocumentPreviewPage(
       key: PageStorageKey('Page1'),

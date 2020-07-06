@@ -9,6 +9,7 @@ import '../constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class DocumentPreviewPage extends StatefulWidget {
+  DocumentPreviewPage({Key key}) : super(key: key);
   static String id = 'document_preview_page';
 
   @override
@@ -16,7 +17,7 @@ class DocumentPreviewPage extends StatefulWidget {
 }
 
 class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
-  void getCurrentUser() async {
+  getCurrentUser() async {
     FirebaseUser currentUser = await _auth.currentUser();
     _docProperty.docOwner = currentUser.email;
   }
@@ -137,14 +138,6 @@ class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
                           ),
                           Expanded(
                             child: Container(
-//                              child: GridView.count(
-//                                crossAxisSpacing: 20,
-//                                mainAxisSpacing: 20,
-//                                padding: EdgeInsets.symmetric(horizontal: 20),
-//                                scrollDirection: Axis.vertical,
-//                                crossAxisCount: 2,
-//                                children: documentCards,
-//                              ),
                               child: StreamBuilder<QuerySnapshot>(
                                 stream: _firestore.collection('roshin@email.com').snapshots(),
                                 builder: (context, snapshot) {

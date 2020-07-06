@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:met/screens/home_screen.dart';
-import 'package:met/screens/upload_file_screen.dart';
 import 'package:met/utilities/custom_buttons.dart';
 import '../constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class SignUpPage extends StatefulWidget {
   static String id = "sign_up_page_id";
+  SignUpPage({Key key}) : super(key: key);
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  bool visible = false;
   bool _isSaving = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String email, password;
@@ -65,8 +65,19 @@ class _SignUpPageState extends State<SignUpPage> {
                 onChanged: (value) {
                   password = value;
                 },
-                obscureText: true,
+                obscureText: !visible,
                 decoration: InputDecoration(
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        visible ? visible = false : visible = true;
+                      });
+                    },
+                    child: Icon(
+                      !visible ? Icons.visibility : Icons.visibility_off,
+                      size: 16,
+                    ),
+                  ),
                   labelText: 'Password',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.black54),
                   contentPadding: EdgeInsets.only(left: 30),
@@ -85,14 +96,11 @@ class _SignUpPageState extends State<SignUpPage> {
                   _isSaving = true;
                 });
                 try {
-                  print(email + password);
-                  await _auth.createUserWithEmailAndPassword(
-                      email: email, password: password);
+                  await _auth.createUserWithEmailAndPassword(email: email, password: password);
                   setState(() {
                     _isSaving = false;
                   });
-                  Navigator.pushNamed(
-                      context, AppBottomNavigationBarController.id);
+                  Navigator.pushNamed(context, AppBottomNavigationBarController.id);
                 } catch (e) {
                   print(e);
                   setState(() {
@@ -143,10 +151,7 @@ class _SignUpPageState extends State<SignUpPage> {
               padding: const EdgeInsets.symmetric(horizontal: 45),
               child: Text(
                 'Sign-up with the help of Google or Sign-up with Microsoft',
-                style: TextStyle(
-                    letterSpacing: .05,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w300),
+                style: TextStyle(letterSpacing: .05, fontSize: 16, fontWeight: FontWeight.w300),
               ),
             ),
             Hero(

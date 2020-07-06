@@ -10,9 +10,7 @@ class CustomTextField extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 40),
       child: TextField(
         onChanged: (value) {},
-        keyboardType: labelText == 'Email'
-            ? TextInputType.emailAddress
-            : TextInputType.text,
+        keyboardType: labelText == 'Email' ? TextInputType.emailAddress : TextInputType.text,
         obscureText: labelText == "Password" ? true : false,
         decoration: InputDecoration(
           labelText: labelText,

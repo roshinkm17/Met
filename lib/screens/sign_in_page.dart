@@ -7,6 +7,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'home_screen.dart';
 
 class SignInPage extends StatefulWidget {
+  SignInPage({Key key}) : super(key: key);
   static String id = "sign_in_page_id";
 
   @override
@@ -17,6 +18,7 @@ class _SignInPageState extends State<SignInPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String email, password;
   bool _isSaving = false;
+  bool visible = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,8 +66,21 @@ class _SignInPageState extends State<SignInPage> {
                 onChanged: (value) {
                   password = value;
                 },
-                obscureText: true,
+                obscureText: !visible,
                 decoration: InputDecoration(
+                  suffixIcon: GestureDetector(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          visible ? visible = false : visible = true;
+                        });
+                      },
+                      child: Icon(
+                        !visible ? Icons.visibility : Icons.visibility_off,
+                        size: 16,
+                      ),
+                    ),
+                  ),
                   labelText: 'Password',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.black54),
                   contentPadding: EdgeInsets.only(left: 30),
@@ -84,13 +99,11 @@ class _SignInPageState extends State<SignInPage> {
                   _isSaving = true;
                 });
                 try {
-                  await _auth.signInWithEmailAndPassword(
-                      email: email, password: password);
+                  await _auth.signInWithEmailAndPassword(email: email, password: password);
                   setState(() {
                     _isSaving = true;
                   });
-                  Navigator.pushNamed(
-                      context, AppBottomNavigationBarController.id);
+                  Navigator.pushNamed(context, AppBottomNavigationBarController.id);
                   setState(() {
                     _isSaving = false;
                   });
@@ -144,10 +157,7 @@ class _SignInPageState extends State<SignInPage> {
               padding: const EdgeInsets.symmetric(horizontal: 45),
               child: Text(
                 'Sign-in with the help of Google or Sign-up with Microsoft',
-                style: TextStyle(
-                    letterSpacing: .05,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w300),
+                style: TextStyle(letterSpacing: .05, fontSize: 16, fontWeight: FontWeight.w300),
               ),
             ),
             Hero(

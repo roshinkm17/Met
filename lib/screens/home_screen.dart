@@ -17,10 +17,18 @@ class AppBottomNavigationBarController extends StatefulWidget {
 
 class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBarController> {
   final List<Widget> pages = [
-    DocumentPreviewPage(),
-    UploadScreen(),
-    SignUpPage(),
-    WelcomeScreen(),
+    DocumentPreviewPage(
+      key: PageStorageKey('Page1'),
+    ),
+    UploadScreen(
+      key: PageStorageKey('Page2'),
+    ),
+    SignUpPage(
+      key: PageStorageKey('Page3'),
+    ),
+    SignInPage(
+      key: PageStorageKey('Page4'),
+    ),
   ];
   tabTapped(int index) {
     setState(() {

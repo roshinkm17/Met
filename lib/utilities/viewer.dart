@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
-import 'package:file_picker/file_picker.dart';
-import 'dart:io';
+import 'package:met/utilities/document_property.dart';
 
 class Viewer extends StatefulWidget {
-  Viewer(this.fileUrl);
-  final fileUrl;
+  Viewer(this.docProperty);
+  final DocProperty docProperty;
   static String id = "viewer_id";
   @override
   _ViewerState createState() => _ViewerState();
@@ -16,7 +15,9 @@ class _ViewerState extends State<Viewer> {
   void initState() {
     super.initState();
     setState(() {
-      pdfUrl = widget.fileUrl;
+      _docProperty.docURL = widget.docProperty.docURL;
+      _docProperty.docName = widget.docProperty.docName;
+      _docProperty.docExtension = widget.docProperty.docExtension;
     });
     initialize();
   }
@@ -25,32 +26,39 @@ class _ViewerState extends State<Viewer> {
     setState(() {
       _isLoading = true;
     });
-    final doc = await PDFDocument.fromURL(pdfUrl);
+    final doc = await PDFDocument.fromURL(_docProperty.docURL);
     setState(() {
       _isLoading = false;
       _document = doc;
     });
   }
 
+  DocProperty _docProperty = DocProperty();
   String pdfUrl;
   bool _isLoading = false;
-  String pdfAsset = "http://www.africau.edu/images/default/sample.pdf";
   PDFDocument _document;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("My document"),
+        title: Text(_docProperty.docName),
       ),
       body: Center(
         child: Container(
-          child: _isLoading
-              ? CircularProgressIndicator()
-              : PDFViewer(
-                  document: _document,
-                  indicatorBackground: Colors.red,
-                  showPicker: false,
+          child: _docProperty.docExtension == "pdf"
+              ? (_isLoading
+                  ? CircularProgressIndicator()
+                  : PDFViewer(
+                      document: _document,
+                      indicatorBackground: Colors.red,
+                      showPicker: false,
+                    ))
+              : Expanded(
+                  child: Image(
+                    fit: BoxFit.contain,
+                    image: NetworkImage(_docProperty.docURL),
+                  ),
                 ),
         ),
       ),

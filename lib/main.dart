@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:met/constants.dart';
 import 'package:met/screens/document_preview_page.dart';
 import 'package:met/screens/home_screen.dart';
 import 'package:met/screens/qr_display_screen.dart';
@@ -6,7 +7,6 @@ import 'package:met/screens/sign_up_page.dart';
 import 'package:met/screens/sign_in_page.dart';
 import 'package:met/screens/upload_file_screen.dart';
 import 'package:met/screens/welcome_page.dart';
-import 'package:met/utilities/viewer.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         fontFamily: 'Poppins',
-        primaryColor: Colors.deepOrangeAccent,
+        primaryColor: primaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       routes: {

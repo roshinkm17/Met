@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:met/constants.dart';
-import 'package:met/screens/qr_scanning_screen.dart';
 import 'package:met/utilities/qr_code_generator.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class ShareScreen extends StatefulWidget {
   ShareScreen({Key key}) : super(key: key);
@@ -12,6 +12,17 @@ class ShareScreen extends StatefulWidget {
 }
 
 class _ShareScreenState extends State<ShareScreen> {
+  String result;
+
+  Future ScanResults() async {
+    String scanresult = await FlutterBarcodeScanner.scanBarcode(
+        "#ffffff", 'cancel', true, ScanMode.QR);
+    setState(() {
+      result = scanresult;
+      print(result);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
@@ -84,7 +95,9 @@ class _ShareScreenState extends State<ShareScreen> {
               child: FlatButton(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 onPressed: () {
-                  Navigator.pushNamed(context, Scanner.id);
+                  setState(() {
+                    ScanResults();
+                  });
                 },
                 color: Colors.lightBlueAccent,
                 child: Text(

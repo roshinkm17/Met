@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:met/constants.dart';
 import 'package:met/screens/document_preview_page.dart';
 import 'package:met/screens/home_screen.dart';
-import 'package:met/screens/qr_display_screen.dart';
+import 'package:met/screens/qr_scanning_screen.dart';
+import 'package:met/screens/share_screen.dart';
 import 'package:met/screens/sign_up_page.dart';
 import 'package:met/screens/sign_in_page.dart';
 import 'package:met/screens/upload_file_screen.dart';
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
         SignInPage.id: (context) => SignInPage(),
         SignUpPage.id: (context) => SignUpPage(),
         UploadScreen.id: (context) => UploadScreen(),
-        QrDisplay.id: (context) => QrDisplay(),
+        ShareScreen.id: (context) => ShareScreen(),
+        Scanner.id: (context) => Scanner(),
         DocumentPreviewPage.id: (context) => DocumentPreviewPage(),
         AppBottomNavigationBarController.id: (context) => AppBottomNavigationBarController(),
       },

@@ -99,10 +99,13 @@ class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
                                     ),
                                     IconButton(
                                       icon: Icon(
-                                        FontAwesomeIcons.qrcode,
+                                        FontAwesomeIcons.signOutAlt,
                                         color: Colors.white,
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        _auth.signOut();
+                                        Navigator.pop(context);
+                                      },
                                     ),
                                   ],
                                 ),

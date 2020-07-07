@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:met/constants.dart';
 import 'package:custom_navigator/custom_navigation.dart';
 import 'package:met/screens/document_preview_page.dart';
+import 'package:met/screens/share_screen.dart';
 import 'package:met/screens/sign_in_page.dart';
 import 'package:met/screens/sign_up_page.dart';
 import 'package:met/screens/upload_file_screen.dart';
@@ -28,7 +29,6 @@ class AppBottomNavigationBarController extends StatefulWidget {
 }
 
 class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBarController> {
-
   void getFile() async {
     file = await FilePicker.getFile();
     setState(() {
@@ -46,7 +46,7 @@ class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBa
     UploadScreen(
       key: PageStorageKey('Page2'),
     ),
-    SignUpPage(
+    ShareScreen(
       key: PageStorageKey('Page3'),
     ),
     SignInPage(
@@ -78,8 +78,8 @@ class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBa
             title: Text('Upload'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            title: Text('Search'),
+            icon: Icon(Icons.share),
+            title: Text('Share'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.perm_identity),
@@ -92,23 +92,23 @@ class _AppBottomNavigationBarControllerState extends State<AppBottomNavigationBa
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       bottomNavigationBar: _bottomNavigationBar(_selectedIndex),
-      floatingActionButton: _selectedIndex != 1
-          ? FloatingActionButton.extended(
-              label: Text("Upload"),
-              isExtended: true,
-              icon: Icon(FontAwesomeIcons.fileUpload),
-              backgroundColor: primaryColor,
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-              elevation: 20,
-              highlightElevation: 0,
-            )
-          : Container(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+//      floatingActionButton: _selectedIndex != 1
+//          ? FloatingActionButton.extended(
+//              label: Text("Upload"),
+//              isExtended: true,
+//              icon: Icon(FontAwesomeIcons.fileUpload),
+//              backgroundColor: Colors.black87,
+//              onPressed: () {
+//                setState(() {
+//                  _selectedIndex = 1;
+//                });
+//              },
+//              elevation: 10,
+//              highlightElevation: 0,
+//            )
+//          : Container(),
+//      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+//      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       body: PageStorage(
         child: pages[_selectedIndex],
         bucket: bucket,

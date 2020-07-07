@@ -32,7 +32,6 @@ class _UploadScreenState extends State<UploadScreen> {
       _docProperty.docName = basename(filePath.toString().split('.')[0]);
       _docProperty.docExtension = basename(filePath.toString().split('.')[1]);
       _controller = TextEditingController(text: _docProperty.docName);
-
     });
   }
 
@@ -44,7 +43,7 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   var pageImage;
-  TextEditingController _controller=null;
+  TextEditingController _controller = null;
   String _uploadedFileURL;
   FirebaseUser currentUser;
   String currentUserEmail;
@@ -60,7 +59,7 @@ class _UploadScreenState extends State<UploadScreen> {
   final Firestore _firestore = Firestore.instance;
 
   DocProperty _docProperty = DocProperty();
-  String _value=" ";
+  String _value = " ";
   @override
   Widget build(BuildContext context) {
     return Hero(
@@ -129,6 +128,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         padding: const EdgeInsets.all(30.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             TextField(
                               controller: _controller,
@@ -192,14 +192,12 @@ class _UploadScreenState extends State<UploadScreen> {
                               ),
                             ),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 Visibility(
-                                  visible: filePath==null?false:true,
+                                  visible: filePath == null ? false : true,
                                   child: Expanded(
-                                    flex: 4,
                                     child: RaisedButton(
-                                      elevation: 5,
+                                      elevation: 3,
                                       highlightElevation: 0,
                                       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                       color: Color(0xff33b5e5),
@@ -228,9 +226,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                                 _isSaving = true;
                                               });
                                               try {
-                                                StorageReference storageReference = FirebaseStorage()
-                                                    .ref()
-                                                    .child(
+                                                StorageReference storageReference =
+                                                    FirebaseStorage().ref().child(
                                                         "${_docProperty.docOwner}/${_docProperty.docName}");
                                                 StorageUploadTask uploadTask =
                                                     storageReference.putFile(_docProperty.docFile);
@@ -246,11 +243,12 @@ class _UploadScreenState extends State<UploadScreen> {
                                                   setState(() {
                                                     _isSaving = false;
                                                     fileSelected = false;
-                                                    filePath=null;
+                                                    filePath = null;
                                                   });
                                                 });
                                                 setState(() {
                                                   _isSaving = false;
+                                                  _controller.clear();
                                                 });
 
                                                 StatusAlert.show(
@@ -277,16 +275,15 @@ class _UploadScreenState extends State<UploadScreen> {
                                           setState(() {
                                             _errorText = "Name cannot be empty!";
                                           });
-
                                         }
-
-
                                       },
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
                                           Icon(Icons.cloud_upload),
-                                          SizedBox(width: 10,),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
                                           Text(
                                             "Upload",
                                             style: TextStyle(fontSize: 20),
@@ -296,40 +293,48 @@ class _UploadScreenState extends State<UploadScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 20,),
-                                Visibility(visible: filePath==null?false:true,
+                                SizedBox(
+                                  width: filePath != null ? 20 : 0,
+                                ),
+                                Visibility(
+                                  visible: filePath == null ? false : true,
                                   child: GestureDetector(
-                                    onTap: (){
+                                    onTap: () {
                                       setState(() {
                                         // ignore: unnecessary_statements
-                                        filePath=null;
+                                        filePath = null;
+                                        _controller.clear();
                                       });
-
                                     },
                                     child: Container(
-                                    color: Colors.grey,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
                                       height: 50,
                                       width: 50,
-                                      child: Icon(Icons.close),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 Visibility(
-                                  visible: filePath==null?true:false,
+                                  visible: filePath == null ? true : false,
                                   child: Expanded(
-                                    flex: 2,
-                                    child: Card(
-                                      color: Colors.deepOrangeAccent,
-                                      child: IconButton(
-                                        onPressed: () {setState(() {
+                                    child: FlatButton(
+                                      padding: EdgeInsets.all(20),
+                                      color: primaryColor,
+                                      onPressed: () {
+                                        setState(() {
                                           getFile();
                                         });
-                                          },
-                                        icon: Icon(
-                                          FontAwesomeIcons.plus,
-                                          size: 16,
-                                        ),
-                                        color: Color(0xffbebebe),
+                                      },
+                                      child: Icon(
+                                        FontAwesomeIcons.plus,
+                                        size: 16,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),

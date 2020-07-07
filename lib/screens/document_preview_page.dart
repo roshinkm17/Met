@@ -19,7 +19,10 @@ class DocumentPreviewPage extends StatefulWidget {
 class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
   getCurrentUser() async {
     FirebaseUser currentUser = await _auth.currentUser();
-    _docProperty.docOwner = currentUser.email;
+    setState(() {
+      _docProperty.docOwner = currentUser.email;
+      print(_docProperty.docOwner);
+    });
   }
 
   onDelete(int index, var snapshot) async {
@@ -139,7 +142,10 @@ class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
                           Expanded(
                             child: Container(
                               child: StreamBuilder<QuerySnapshot>(
-                                stream: _firestore.collection(_docProperty.docOwner).snapshots(),
+                                stream: _firestore
+                                    .collection(
+                                        _docProperty.docOwner == null ? "" : _docProperty.docOwner)
+                                    .snapshots(),
                                 builder: (context, snapshot) {
                                   var card;
                                   List<Widget> documentCards = [];

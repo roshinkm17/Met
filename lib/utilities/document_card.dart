@@ -25,7 +25,6 @@ class _DocumentCardState extends State<DocumentCard> {
       _docProperty.docURL = widget.docProperty.docURL;
       _docProperty.docName = widget.docProperty.docName;
       _docProperty.docExtension = widget.docProperty.docExtension;
-      _docProperty.docExtension = widget.docProperty.docExtension;
       _docProperty.docCategory = widget.docProperty.docCategory;
       _docProperty.docOwner = widget.docProperty.docOwner;
     });

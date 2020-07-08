@@ -48,32 +48,33 @@ class _SharedDocumentsScreenState extends State<SharedDocumentsScreen> {
       body: SafeArea(
         child: Container(
           child: Center(
-              child: Expanded(
-            child: Container(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    .collection(_docProperty.docOwner == null ? "" : _docProperty.docOwner)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  var card;
-                  List<Widget> documentCards = [];
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context, index) {
-                        final doc = snapshot.data.documents[index];
-                        _docProperty.docName = doc.data["document name"];
-                        _docProperty.docURL = doc.data["document url"];
-                        _docProperty.docCategory = doc.data["document category"];
-                        _docProperty.docExtension = doc.data['document extension'];
-                        return new DocumentCard(docProperty: _docProperty);
-                      },
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              ),
+              child: Container(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _firestore
+                  .collection(_docProperty.docOwner == null
+                      ? ""
+                      : _docProperty.docOwner)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                var card;
+                List<Widget> documentCards = [];
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.documents.length,
+                    itemBuilder: (context, index) {
+                      final doc = snapshot.data.documents[index];
+                      _docProperty.docName = doc.data["document name"];
+                      _docProperty.docURL = doc.data["document url"];
+                      _docProperty.docCategory = doc.data["document category"];
+                      _docProperty.docExtension =
+                          doc.data['document extension'];
+                      return new DocumentCard(docProperty: _docProperty);
+                    },
+                  );
+                } else {
+                  return Container();
+                }
+              },
             ),
           )),
         ),

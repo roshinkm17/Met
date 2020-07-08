@@ -25,17 +25,23 @@ class _ShareScreenState extends State<ShareScreen> {
   }
 
   scanResults() async {
-    result = await FlutterBarcodeScanner.scanBarcode("#ffffff", 'cancel', true, ScanMode.QR);
+    String result = 'null';
+    result = await FlutterBarcodeScanner.scanBarcode(
+        "#ffffff", 'cancel', true, ScanMode.QR);
+
+    if (result == '-1') {
+      print('test0 : $result');
+    }
     // ignore: unnecessary_statements
-    result != null
-        ? Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => SharedDocumentsScreen(
-                      scannedId: result,
-                    )))
-        // ignore: unnecessary_statements
-        : "";
+    else {
+      print('test2 : $result');
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SharedDocumentsScreen(
+                    scannedId: result,
+                  )));
+    }
   }
 
   _getUid() async {
@@ -50,7 +56,7 @@ class _ShareScreenState extends State<ShareScreen> {
   String id;
   var uid = Uuid();
   QRCode qrCode = QRCode();
-  var result;
+
   FirebaseUser currentUser;
   FirebaseAuth _auth = FirebaseAuth.instance;
   DocProperty _docProperty = DocProperty();

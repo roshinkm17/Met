@@ -23,6 +23,7 @@ dependencies:
   flutter_pdfview: ^1.0.3
   rflutter_alert: ^1.0.3
   flutter_barcode_scanner: ^1.0.1
+  uuid: ^2.2.0
 
 dev_dependencies:
   flutter_test:

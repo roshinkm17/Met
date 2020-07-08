@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:met/constants.dart';
+import 'package:met/screens/shared_docs_screen.dart';
+import 'package:met/utilities/document_property.dart';
 import 'package:met/utilities/qr_code_generator.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:met/utilities/scanner.dart';
 
 class ShareScreen extends StatefulWidget {
   ShareScreen({Key key}) : super(key: key);
@@ -12,16 +19,41 @@ class ShareScreen extends StatefulWidget {
 }
 
 class _ShareScreenState extends State<ShareScreen> {
-  String result;
-
-  Future ScanResults() async {
-    String scanresult = await FlutterBarcodeScanner.scanBarcode(
-        "#ffffff", 'cancel', true, ScanMode.QR);
-    setState(() {
-      result = scanresult;
-      print(result);
-    });
+  void initState() {
+    super.initState();
+    _getUid();
   }
+
+  scanResults() async {
+    result = await FlutterBarcodeScanner.scanBarcode("#ffffff", 'cancel', true, ScanMode.QR);
+    // ignore: unnecessary_statements
+    result != null
+        ? Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => SharedDocumentsScreen(
+                      scannedId: result,
+                    )))
+        // ignore: unnecessary_statements
+        : "";
+  }
+
+  _getUid() async {
+    Firestore _firestore = Firestore.instance;
+    currentUser = await _auth.currentUser();
+    setState(() {
+      id = uid.v5(Uuid.NAMESPACE_URL, currentUser.email);
+    });
+    _firestore.collection('uids').document(id).setData({"owner": currentUser.email, "uid": id});
+  }
+
+  String id;
+  var uid = Uuid();
+  QRCode qrCode = QRCode();
+  var result;
+  FirebaseUser currentUser;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  DocProperty _docProperty = DocProperty();
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +78,9 @@ class _ShareScreenState extends State<ShareScreen> {
                   )
                 ],
               ),
-              width: deviceWidth * 0.5,
-              padding: EdgeInsets.all(20),
-              child: QRCode(),
+              width: deviceWidth * 0.6,
+              padding: EdgeInsets.all(10),
+              child: QRCode(data: id == null ? "" : id),
             ),
             SizedBox(height: 30),
             Text(
@@ -96,7 +128,7 @@ class _ShareScreenState extends State<ShareScreen> {
                 padding: EdgeInsets.symmetric(vertical: 20),
                 onPressed: () {
                   setState(() {
-                    ScanResults();
+                    scanResults();
                   });
                 },
                 color: Colors.lightBlueAccent,

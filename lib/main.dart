@@ -3,6 +3,7 @@ import 'package:met/constants.dart';
 import 'package:met/screens/document_preview_page.dart';
 import 'package:met/screens/home_screen.dart';
 import 'package:met/screens/share_screen.dart';
+import 'package:met/screens/shared_docs_screen.dart';
 import 'package:met/screens/sign_up_page.dart';
 import 'package:met/screens/sign_in_page.dart';
 import 'package:met/screens/upload_file_screen.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         SignUpPage.id: (context) => SignUpPage(),
         UploadScreen.id: (context) => UploadScreen(),
         ShareScreen.id: (context) => ShareScreen(),
+        SharedDocumentsScreen.id: (context) => SharedDocumentsScreen(),
         DocumentPreviewPage.id: (context) => DocumentPreviewPage(),
         AppBottomNavigationBarController.id: (context) => AppBottomNavigationBarController(),
       },

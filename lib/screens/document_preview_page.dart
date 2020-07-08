@@ -21,7 +21,6 @@ class _DocumentPreviewPageState extends State<DocumentPreviewPage> {
     FirebaseUser currentUser = await _auth.currentUser();
     setState(() {
       _docProperty.docOwner = currentUser.email;
-      print(_docProperty.docOwner);
     });
   }
 
